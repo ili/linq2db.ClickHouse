@@ -1,8 +1,8 @@
 [submodule "submodules/linq2db"]
 	path = submodules/linq2db
-	url = git@github.com:linq2db/linq2db.git
+	url = git@github.com:ili/linq2db.git
 	branch = master
 [submodule "submodules/ClickHouse-Net"]
 	path = submodules/ClickHouse-Net
-	url = git@github.com:linq2db/ClickHouse-Net.git
+	url = git@github.com:ili/ClickHouse-Net.git
 	branch = master

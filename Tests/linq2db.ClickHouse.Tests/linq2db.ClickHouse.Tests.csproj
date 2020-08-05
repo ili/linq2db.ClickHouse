@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+
+		<IsPackable>false</IsPackable>
+
+		<RootNamespace>LinqToDB.ClickHouse.Tests</RootNamespace>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\linq2db.ClickHouse\linq2db.ClickHouse.csproj" />
+		<ProjectReference Include="..\..\submodules\linq2db\Tests\Base\Tests.Base.csproj" />
+
+		<PackageReference Include="NUnit3TestAdapter" Version="3.16.1" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
+		<PackageReference Include="Microsoft.Data.SQLite" Version="3.1.5" />
+	</ItemGroup>
+
+	<ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
+		<!-- TEMP: explicitly reference specific version to avoid MSB3277 -->
+		<PackageReference Include="System.Security.Cryptography.Cng" Version="4.7.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\..\submodules\linq2db\Data\*">
+			<Link>Database/%(FileName)%(Extension)</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Include="..\..\submodules\linq2db\Data\Create Scripts\*">
+			<Link>Database/Create Scripts/%(FileName)%(Extension)</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+
+		<None Include="..\..\Data\*">
+			<Link>Database/%(FileName)%(Extension)</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Include="..\..\Data\Create Scripts\*">
+			<Link>Database/Create Scripts/%(FileName)%(Extension)</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Create\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="F:\job\linq2db.ClickHouse\Data\Create Scripts\ClickHouse.sql" Link="ClickHouse.sql" />
+	</ItemGroup>
+</Project>
