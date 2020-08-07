@@ -91,8 +91,8 @@ DROP TABLE IF EXISTS Parent;
 DROP TABLE IF EXISTS Child;
 DROP TABLE IF EXISTS GrandChild;
 
-CREATE TABLE Parent      (ParentID Int32, Value1  Int32) ENGINE = MergeTree() ORDER BY ParentID;
-CREATE TABLE Child       (ParentID Int32, ChildID Int32) ENGINE = MergeTree() ORDER BY ParentID;
+CREATE TABLE Parent      (ParentID Int32, Value1  Int32 NULL) ENGINE = MergeTree() ORDER BY ParentID;
+CREATE TABLE Child       (ParentID Int32, ChildID Int32)      ENGINE = MergeTree() ORDER BY ParentID;
 CREATE TABLE GrandChild  (ParentID Int32, ChildID Int32, GrandChildID Int32) ENGINE = MergeTree() ORDER BY ParentID;
 
 DROP TABLE IF EXISTS LinqDataTypes;
@@ -100,15 +100,15 @@ CREATE TABLE LinqDataTypes
 (
 	ID             Int32,
 	MoneyValue     Decimal(10,4),
-	DateTimeValue  DateTime,
+	DateTimeValue  DateTime64(3) NULL,
 	DateTimeValue2 DateTime64(5) NULL,
-	BoolValue      UInt8,
-	GuidValue      UUID,
-	BinaryValue    binary(5000) NULL,
-	SmallIntValue  Int16,
-	IntValue       Int32        NULL,
-	BigIntValue    Int64        NULL,
-	StringValue    String       NULL
+	BoolValue      UInt8         NULL,
+	GuidValue      UUID          NULL,
+	BinaryValue    binary(5000)  NULL,
+	SmallIntValue  Int16         NULL,
+	IntValue       Int32         NULL,
+	BigIntValue    Int64         NULL,
+	StringValue    String        NULL
 )
 ENGINE = MergeTree()
 ORDER BY ID
