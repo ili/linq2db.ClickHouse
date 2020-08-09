@@ -26,13 +26,13 @@
 		"DefaultConfiguration": "SQLite.MS",
 		"Providers": [
 			"SQLite.MS",
-			"ClickHouse.Ado",
+			//"ClickHouse.Ado",
 			"ClickHouse.Client"
 		],
 		"Connections": {
 			"ClickHouse.Ado": {
 				"Provider": "ClickHouse.Ado",
-				"ConnectionString": "Host=localhost;Port=9000;Database=TestDatabaseTcp;Password=TestPassword;"
+				"ConnectionString": "Host=localhost;Port=9000;Database=TestDatabaseTcp;User=default;Password=TestPassword;"
 			},
 			"ClickHouse.Client": {
 				"Provider": "ClickHouse.Client",

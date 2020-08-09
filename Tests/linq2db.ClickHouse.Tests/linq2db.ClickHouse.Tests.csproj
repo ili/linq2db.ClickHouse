@@ -47,6 +47,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Include="F:\job\linq2db.ClickHouse\Data\Create Scripts\ClickHouse.sql" Link="ClickHouse.sql" />
+	  <None Include="..\..\Data\Create Scripts\ClickHouse.sql" Link="ClickHouse.sql" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Update\InsertTests.cs" />
+	
 	</ItemGroup>
 </Project>
