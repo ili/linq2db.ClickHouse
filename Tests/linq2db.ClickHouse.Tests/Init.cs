@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using LinqToDB.Data;
 using LinqToDB.DataProvider.ClickHouse;
@@ -15,5 +16,11 @@ public class Init
 			new ClickHouseDataProvider(ClickHouseProviderAdapter.TcpProviderName));
 		DataConnection.AddDataProvider(ClickHouseProviderAdapter.HttpProviderName,
 			new ClickHouseDataProvider(ClickHouseProviderAdapter.HttpProviderName));
+
+		// Walkaround to use Yandex.Cloud Ignore SSL
+		ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, errors) =>
+		{
+			return true;
+		};
 	}
 }

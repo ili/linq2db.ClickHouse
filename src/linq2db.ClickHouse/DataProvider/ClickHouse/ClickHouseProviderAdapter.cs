@@ -67,11 +67,11 @@ namespace LinqToDB.DataProvider.ClickHouse
 
 			var types = assembly.GetTypes();
 
-			var connectionType  = types.Single         (_ => _.IsPublic && _.GetInterfaces().Contains(typeof(IDbConnection)))!;
-			var dataReaderType  = types.Single         (_ => _.IsPublic && _.GetInterfaces().Contains(typeof(IDataReader)))!;
-			var parameterType   = types.Single         (_ => _.IsPublic && _.GetInterfaces().Contains(typeof(IDbDataParameter)))!;
-			var commandType     = types.Single         (_ => _.IsPublic && _.GetInterfaces().Contains(typeof(IDbCommand)))!;
-			var transactionType = types.SingleOrDefault(_ => _.IsPublic && _.GetInterfaces().Contains(typeof(IDbTransaction))) ?? typeof(FakeTransaction); // assembly.GetType($"{clientNamespace}.{prefix}Transaction", true)!;
+			var connectionType  = types.Single         (_ => _.IsClass && _.IsPublic && _.GetInterfaces().Contains(typeof(IDbConnection)))!;
+			var dataReaderType  = types.Single         (_ => _.IsClass && _.IsPublic && _.GetInterfaces().Contains(typeof(IDataReader)))!;
+			var parameterType   = types.Single         (_ => _.IsClass && _.IsPublic && _.GetInterfaces().Contains(typeof(IDbDataParameter)))!;
+			var commandType     = types.Single         (_ => _.IsClass && _.IsPublic && _.GetInterfaces().Contains(typeof(IDbCommand)))!;
+			var transactionType = types.SingleOrDefault(_ => _.IsClass && _.IsPublic && _.GetInterfaces().Contains(typeof(IDbTransaction))) ?? typeof(FakeTransaction); // assembly.GetType($"{clientNamespace}.{prefix}Transaction", true)!;
 
 			return new ClickHouseProviderAdapter(
 				connectionType,

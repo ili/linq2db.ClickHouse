@@ -14,6 +14,8 @@ namespace LinqToDB.DataProvider.ClickHouse
 	using SqlProvider;
 	using System.Threading.Tasks;
 	using System.Threading;
+	using System.Net.Http;
+	using System.Net;
 
 	public class ClickHouseDataProvider : DynamicDataProviderBase<ClickHouseProviderAdapter>
 	{
@@ -87,6 +89,22 @@ namespace LinqToDB.DataProvider.ClickHouse
 			}
 
 			base.SetParameterType(dataConnection, parameter, dataType);
+		}
+
+
+		private static readonly HttpClient _httpClient = new HttpClient(
+			new HttpClientHandler()
+			{
+				ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
+				AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+			});
+
+		protected override IDbConnection CreateConnectionInternal(string connectionString)
+		{
+			//return base.CreateConnectionInternal(connectionString);
+			return new global::ClickHouse.Client.ADO.ClickHouseConnection(
+				connectionString,
+				_httpClient);
 		}
 
 		#region BulkCopy

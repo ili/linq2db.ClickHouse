@@ -36,7 +36,7 @@
 			},
 			"ClickHouse.Client": {
 				"Provider": "ClickHouse.Client",
-				"ConnectionString": "Hostname=localhost;Database=TestDatabaseHttp;Password=TestPassword;"
+				"ConnectionString": "Host=rc1c-pk6w0hv8kpqqrn89.mdb.yandexcloud.net;Database=TestDatabase;Password=TestPassword;Username=TestUser;Protocol=https;Port=8443"
 			},
 			"SQLite.MS": {
 				"Provider": "SQLite.MS",
