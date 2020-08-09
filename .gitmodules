@@ -6,3 +6,7 @@
 	path = submodules/ClickHouse-Net
 	url = git@github.com:ili/ClickHouse-Net.git
 	branch = master
+[submodule "submodules/ClickHouse.Client"]
+	path = submodules/ClickHouse.Client
+	url = git@github.com:ili/ClickHouse.Client.git
+	branch = master
