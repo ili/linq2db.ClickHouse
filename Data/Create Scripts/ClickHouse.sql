@@ -11,9 +11,9 @@ INSERT INTO  Dual (Dummy) VALUES ('X');
 DROP TABLE IF EXISTS InheritanceParent;
 CREATE TABLE InheritanceParent
 (
-	InheritanceParentId Int32      NOT NULL,
-	TypeDiscriminator   Int32          NULL,
-	Name                String     NULL
+	InheritanceParentId          Int32,
+	TypeDiscriminator   Nullable(Int32),
+	Name                Nullable(String)
 )
 ENGINE = MergeTree()
 ORDER BY InheritanceParentId
@@ -22,10 +22,10 @@ PRIMARY KEY InheritanceParentId;
 DROP TABLE IF EXISTS InheritanceChild;
 CREATE TABLE InheritanceChild
 (
-	InheritanceChildId  Int32      NOT NULL,
-	InheritanceParentId Int32      NOT NULL,
-	TypeDiscriminator   Int32          NULL,
-	Name                String     NULL
+	InheritanceChildId           Int32,
+	InheritanceParentId          Int32,
+	TypeDiscriminator   Nullable(Int32),
+	Name                Nullable(String)
 )
 ENGINE = MergeTree()
 ORDER BY InheritanceChildId
@@ -39,11 +39,11 @@ DROP TABLE IF EXISTS Patient;
 DROP TABLE IF EXISTS Person;
 CREATE TABLE Person
 (
-	PersonID   Int32          NOT NULL,
-	FirstName  String         NOT NULL,
-	LastName   String         NOT NULL,
-	MiddleName String             NULL,
-	Gender     FixedString(1) NOT NULL,
+	PersonID            Int32,
+	FirstName           String,
+	LastName            String,
+	MiddleName Nullable(String),
+	Gender              FixedString(1),
 	
 	CONSTRAINT CK_Person_Gender CHECK (Gender in ('M', 'F', 'U', 'O'))
 )
@@ -61,8 +61,8 @@ INSERT INTO Person (PersonID, FirstName, LastName, MiddleName, Gender) VALUES (4
 --
 CREATE TABLE Doctor
 (
-	PersonID Int32  NOT NULL,
-	Taxonomy String NOT NULL
+	PersonID Int32,
+	Taxonomy String
 )
 ENGINE = MergeTree()
 ORDER BY PersonID
@@ -75,8 +75,8 @@ INSERT INTO Doctor (PersonID, Taxonomy) VALUES (1, 'Psychiatry');
 --
 CREATE TABLE Patient
 (
-	PersonID  Int32  NOT NULL,
-	Diagnosis String NOT NULL
+	PersonID  Int32,
+	Diagnosis String
 )
 ENGINE = MergeTree()
 ORDER BY PersonID
@@ -91,24 +91,24 @@ DROP TABLE IF EXISTS Parent;
 DROP TABLE IF EXISTS Child;
 DROP TABLE IF EXISTS GrandChild;
 
-CREATE TABLE Parent      (ParentID Int32, Value1  Int32 NULL) ENGINE = MergeTree() ORDER BY ParentID;
-CREATE TABLE Child       (ParentID Int32, ChildID Int32)      ENGINE = MergeTree() ORDER BY ParentID;
+CREATE TABLE Parent      (ParentID Int32, Value1  Nullable(Int32))           ENGINE = MergeTree() ORDER BY ParentID;
+CREATE TABLE Child       (ParentID Int32, ChildID Int32)                     ENGINE = MergeTree() ORDER BY ParentID;
 CREATE TABLE GrandChild  (ParentID Int32, ChildID Int32, GrandChildID Int32) ENGINE = MergeTree() ORDER BY ParentID;
 
 DROP TABLE IF EXISTS LinqDataTypes;
 CREATE TABLE LinqDataTypes
 (
-	ID             Int32,
-	MoneyValue     Decimal(10,4),
-	DateTimeValue  DateTime64(3) NULL,
-	DateTimeValue2 DateTime64(5) NULL,
-	BoolValue      UInt8         NULL,
-	GuidValue      UUID          NULL,
-	BinaryValue    binary(5000)  NULL,
-	SmallIntValue  Int16         NULL,
-	IntValue       Int32         NULL,
-	BigIntValue    Int64         NULL,
-	StringValue    String        NULL
+	ID                      Int32,
+	MoneyValue              Decimal(10,4),
+	DateTimeValue  Nullable(DateTime64(3)),
+	DateTimeValue2 Nullable(DateTime64(5)),
+	BoolValue      Nullable(UInt8),
+	GuidValue      Nullable(UUID),
+	BinaryValue    Nullable(binary(5000)),
+	SmallIntValue  Nullable(Int16),
+	IntValue       Nullable(Int32),
+	BigIntValue    Nullable(Int64),
+	StringValue    Nullable(String)
 )
 ENGINE = MergeTree()
 ORDER BY ID
@@ -131,35 +131,35 @@ DROP TABLE IF EXISTS AllTypes
 
 CREATE TABLE AllTypes
 (
-	ID                       Int32          NOT NULL,
+	ID                                Int32,
 
-	bigintDataType           Int64            NULL,
-	numericDataType          decimal(20,0)    NULL,
-	bitDataType              UInt8            NULL,
-	smallintDataType         Int16            NULL,
-	decimalDataType          decimal(20,4)    NULL,
-	intDataType              Int32            NULL,
-	tinyintDataType          Int8             NULL,
-	moneyDataType            decimal(20,2)    NULL,
-	floatDataType            Float32            NULL,
-	realDataType             Float64          NULL,
+	bigintDataType           Nullable(Int64),
+	numericDataType          Nullable(decimal(20,0)),
+	bitDataType              Nullable(UInt8),
+	smallintDataType         Nullable(Int16),
+	decimalDataType          Nullable(decimal(20,4)),
+	intDataType              Nullable(Int32),
+	tinyintDataType          Nullable(Int8),
+	moneyDataType            Nullable(decimal(20,2)),
+	floatDataType            Nullable(Float32),
+	realDataType             Nullable(Float64),
 
-	datetimeDataType         datetime         NULL,
+	datetimeDataType         Nullable(datetime),
 
-	charDataType             FixedString(1)          NULL,
-	char20DataType           FixedString(20)         NULL,
-	varcharDataType          String      NULL,
-	textDataType             String             NULL,
-	ncharDataType            FixedString(20)        NULL,
-	nvarcharDataType         String     NULL,
-	ntextDataType            String            NULL,
+	charDataType             Nullable(FixedString(1)),
+	char20DataType           Nullable(FixedString(20)),
+	varcharDataType          Nullable(String),
+	textDataType             Nullable(String),
+	ncharDataType            Nullable(FixedString(20)),
+	nvarcharDataType         Nullable(String),
+	ntextDataType            Nullable(String),
 
-	binaryDataType           binary(5000)           NULL,
-	varbinaryDataType        binary(5000)        NULL,
-	imageDataType            binary(5000)            NULL,
+	binaryDataType           Nullable(binary(5000)),
+	varbinaryDataType        Nullable(binary(5000)),
+	imageDataType            Nullable(binary(5000)),
 
-	uniqueidentifierDataType UUID NULL,
-	objectDataType           binary(5000)           NULL
+	uniqueidentifierDataType Nullable(UUID),
+	objectDataType           Nullable(binary(5000))
 )
 ENGINE = MergeTree()
 ORDER BY ID
@@ -202,8 +202,8 @@ DROP TABLE IF EXISTS PrimaryKeyTable
 
 CREATE TABLE PrimaryKeyTable
 (
-	ID           Int32  NOT NULL,
-	Name         String NOT NULL
+	ID           Int32,
+	Name         String
 )
 ENGINE = MergeTree()
 ORDER BY ID
@@ -215,8 +215,8 @@ DROP TABLE IF EXISTS ForeignKeyTable
 
 CREATE TABLE ForeignKeyTable
 (
-	PrimaryKeyTableID Int32  NOT NULL,
-	Name              String NOT NULL
+	PrimaryKeyTableID Int32,
+	Name              String
 )
 ENGINE = MergeTree()
 ORDER BY PrimaryKeyTableID;
@@ -227,13 +227,13 @@ DROP TABLE IF EXISTS FKTestPosition
 
 CREATE TABLE FKTestPosition
 (
-	Company      Int32      NOT NULL,
-	Department   Int32      NOT NULL,
-	PositionID   Int32      NOT NULL,
-	Name         String     NOT NULL
+	Company      Int32,
+	Department   Int32,
+	PositionID   Int32,
+	Name         String
 )
 ENGINE = MergeTree()
-ORDER BY (Company, Department, PositionID)
+ORDER   BY  (Company, Department, PositionID)
 PRIMARY KEY (Company, Department, PositionID);
 
 -- merge test tables
@@ -241,27 +241,27 @@ DROP TABLE IF EXISTS TestMerge1;
 DROP TABLE IF EXISTS TestMerge2;
 CREATE TABLE TestMerge1
 (
-	Id              Int32       NOT NULL,
-	Field1          Int32           NULL,
-	Field2          Int32           NULL,
-	Field3          Int32           NULL,
-	Field4          Int32           NULL,
-	Field5          Int32           NULL,
+	Id                       Int32,
+	Field1          Nullable(Int32),
+	Field2          Nullable(Int32),
+	Field3          Nullable(Int32),
+	Field4          Nullable(Int32),
+	Field5          Nullable(Int32),
 
-	FieldInt64      Int64           NULL,
-	FieldBoolean    UInt8           NULL,
-	FieldString     String          NULL,
-	FieldNString    String          NULL,
-	FieldChar       FixedString(1)  NULL,
-	FieldNChar      FixedString(1)  NULL,
-	FieldFloat      Float32         NULL,
-	FieldDouble     Float64         NULL,
-	FieldDateTime   DateTime        NULL,
-	FieldBinary     binary(20)      NULL,
-	FieldGuid       UUID            NULL,
-	FieldDate       Date            NULL,
-	FieldEnumString String          NULL,
-	FieldEnumNumber Int32           NULL
+	FieldInt64      Nullable(Int64),
+	FieldBoolean    Nullable(UInt8),
+	FieldString     Nullable(String),
+	FieldNString    Nullable(String),
+	FieldChar       Nullable(FixedString(1)),
+	FieldNChar      Nullable(FixedString(1)),
+	FieldFloat      Nullable(Float32),
+	FieldDouble     Nullable(Float64),
+	FieldDateTime   Nullable(DateTime),
+	FieldBinary     Nullable(binary(20)),
+	FieldGuid       Nullable(UUID),
+	FieldDate       Nullable(Date),
+	FieldEnumString Nullable(String),
+	FieldEnumNumber Nullable(Int32)
 )
 ENGINE = MergeTree()
 ORDER BY Id
@@ -269,27 +269,27 @@ PRIMARY KEY Id;
 
 CREATE TABLE TestMerge2
 (
-	Id              Int32       NOT NULL,
-	Field1          Int32           NULL,
-	Field2          Int32           NULL,
-	Field3          Int32           NULL,
-	Field4          Int32           NULL,
-	Field5          Int32           NULL,
+	Id                       Int32,
+	Field1          Nullable(Int32),
+	Field2          Nullable(Int32),
+	Field3          Nullable(Int32),
+	Field4          Nullable(Int32),
+	Field5          Nullable(Int32),
 
-	FieldInt64      Int64           NULL,
-	FieldBoolean    UInt8           NULL,
-	FieldString     String          NULL,
-	FieldNString    String          NULL,
-	FieldChar       FixedString(1)  NULL,
-	FieldNChar      FixedString(1)  NULL,
-	FieldFloat      Float32         NULL,
-	FieldDouble     Float64         NULL,
-	FieldDateTime   DateTime        NULL,
-	FieldBinary     binary(20)      NULL,
-	FieldGuid       UUID            NULL,
-	FieldDate       Date            NULL,
-	FieldEnumString String          NULL,
-	FieldEnumNumber Int32           NULL
+	FieldInt64      Nullable(Int64),
+	FieldBoolean    Nullable(UInt8),
+	FieldString     Nullable(String),
+	FieldNString    Nullable(String),
+	FieldChar       Nullable(FixedString(1)),
+	FieldNChar      Nullable(FixedString(1)),
+	FieldFloat      Nullable(Float32),
+	FieldDouble     Nullable(Float64),
+	FieldDateTime   Nullable(DateTime),
+	FieldBinary     Nullable(binary(20)),
+	FieldGuid       Nullable(UUID),
+	FieldDate       Nullable(Date),
+	FieldEnumString Nullable(String),
+	FieldEnumNumber Nullable(Int32)
 )
 ENGINE = MergeTree()
 ORDER BY Id
@@ -298,13 +298,13 @@ PRIMARY KEY Id;
 DROP TABLE IF EXISTS TEST_T4_CASING;
 CREATE TABLE TEST_T4_CASING
 (
-	ALL_CAPS              Int32    NOT NULL,
-	CAPS                  Int32    NOT NULL,
-	PascalCase            Int32    NOT NULL,
-	Pascal_Snake_Case     Int32    NOT NULL,
-	PascalCase_Snake_Case Int32    NOT NULL,
-	snake_case            Int32    NOT NULL,
-	camelCase             Int32    NOT NULL
+	ALL_CAPS              Int32,
+	CAPS                  Int32,
+	PascalCase            Int32,
+	Pascal_Snake_Case     Int32,
+	PascalCase_Snake_Case Int32,
+	snake_case            Int32,
+	camelCase             Int32
 )
 ENGINE = MergeTree()
 ORDER BY ALL_CAPS;
