@@ -41,6 +41,10 @@ namespace LinqToDB.DataProvider.ClickHouse
 			SqlProviderFlags.IsDistinctSetOperationsSupported  = true;
 			SqlProviderFlags.IsUpdateFromSupported             = false;
 			SqlProviderFlags.DefaultMultiQueryIsolationLevel   = IsolationLevel.Unspecified;
+			SqlProviderFlags.IsDeleteSupported                 = false;
+			SqlProviderFlags.IsUpdateSupported                 = false;
+			SqlProviderFlags.IsInsertWithIdentitySupported     = false;
+			SqlProviderFlags.IsAffectedRowsSupported           = false;
 
 			_sqlOptimizer = new ClickHouseSqlOptimizer(SqlProviderFlags);
 		}

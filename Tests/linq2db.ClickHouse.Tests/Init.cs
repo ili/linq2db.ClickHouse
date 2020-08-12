@@ -4,7 +4,9 @@ using System.Net;
 using System.Text;
 using LinqToDB.Data;
 using LinqToDB.DataProvider.ClickHouse;
+using LinqToDB.Mapping;
 using NUnit.Framework;
+using Tests.Model;
 
 [SetUpFixture]
 public class Init
@@ -22,5 +24,13 @@ public class Init
 		{
 			return true;
 		};
+
+		// Mapings
+		var builder = ClickHouseMappingSchema.Instance.GetFluentMappingBuilder();
+
+		builder.Entity<ComplexPerson>()
+			.Property(_ => _.ID)
+			.HasIdentity(false);
+
 	}
 }

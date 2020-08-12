@@ -42,7 +42,7 @@ namespace LinqToDB.DataProvider.ClickHouse
 				case ConvertType.NameToQueryParameter:
 				case ConvertType.NameToCommandParameter:
 				case ConvertType.NameToSprocParameter:
-					return sb.Append('@').Append(value);
+					return sb.Append('{').Append(value);
 
 				case ConvertType.NameToQueryField:
 				case ConvertType.NameToQueryFieldAlias:
@@ -64,7 +64,7 @@ namespace LinqToDB.DataProvider.ClickHouse
 					return sb.Append('"').Append(value).Append('"');
 
 				case ConvertType.SprocParameterToName:
-					return value.Length > 0 && value[0] == '@'
+					return value.Length > 0 && value[0] == '{'
 						? sb.Append(value.Substring(1))
 						: sb.Append(value);
 			}
@@ -74,30 +74,106 @@ namespace LinqToDB.DataProvider.ClickHouse
 
 		protected override void BuildDataTypeFromDataType(SqlDataType type, bool forCreateTable)
 		{
+			if (type.CanBeNull)
+				StringBuilder.Append("Nullable(");
+
+			var builded      = true;
+			var ignoreLength = !forCreateTable;
+
 			switch (type.Type.DataType)
 			{
-				case DataType.Int32 : StringBuilder.Append("INTEGER");                      break;
-				default             : base.BuildDataTypeFromDataType(type, forCreateTable); break;
+
+				case DataType.Int32: StringBuilder.Append("INTEGER"); break;
+				case DataType.Undefined:
+				case DataType.Char:
+				case DataType.VarChar:
+				case DataType.Text:
+				case DataType.NChar:
+				case DataType.NVarChar:
+				case DataType.NText:
+					StringBuilder.Append(!ignoreLength && type.Type.Length > 0 ? "FixedString" : "String");
+					break;
+				case DataType.Binary:
+				case DataType.VarBinary:
+				case DataType.Blob:
+				case DataType.Image:
+					StringBuilder.Append("binary");
+					break;
+				case DataType.Guid:
+					StringBuilder.Append("UUID");
+					break;
+				case DataType.SByte:
+					StringBuilder.Append("Int8");
+					break;
+				case DataType.Byte:
+				case DataType.Boolean:
+					StringBuilder.Append("UInt8");
+					break;
+				case DataType.Int16:
+				case DataType.Int64:
+				case DataType.UInt16:
+				case DataType.UInt32:
+				case DataType.UInt64:
+					StringBuilder.Append(type.Type.DataType);
+					break;
+				case DataType.Single:
+					StringBuilder.Append("Float32");
+					break;
+				case DataType.Double:
+					StringBuilder.Append("Float64");
+					break;
+				case DataType.Decimal:
+				case DataType.Money:
+				case DataType.SmallMoney:
+				case DataType.VarNumeric:
+					StringBuilder.Append("decimal");
+					break;
+				case DataType.Date:
+				case DataType.SmallDateTime:
+				case DataType.Time:
+					StringBuilder.Append("DateTime");
+					break;
+				case DataType.DateTime:
+				case DataType.DateTime2:
+				case DataType.DateTimeOffset:
+				case DataType.Timestamp:
+					StringBuilder.Append("DateTime64");
+					break;
+				case DataType.Xml:
+				case DataType.Variant:
+				case DataType.Udt:
+				case DataType.Dictionary:
+				case DataType.Cursor:
+				case DataType.Json:
+				case DataType.BinaryJson:
+				case DataType.Structured:
+				case DataType.Long:
+				case DataType.LongRaw:
+				case DataType.Interval:
+				case DataType.BFile:
+					StringBuilder.Append("String");
+					ignoreLength = true;
+					break;
+				case DataType.BitArray:
+					StringBuilder.Append("Array(UInt8)");
+					break;
+				default:
+					builded = false; break;
 			}
-		}
 
+			if (!builded)
+				base.BuildDataTypeFromDataType(type, forCreateTable);
+			else
+			{
+				if (!ignoreLength && type.Type.Length > 0)
+					StringBuilder.Append('(').Append(type.Type.Length).Append(')');
 
-		public override StringBuilder BuildTableName(StringBuilder sb, string? server, string? database, string? schema, string table)
-		{
-			if (database != null && database.Length == 0) database = null;
+				if (type.Type.Precision > 0)
+					StringBuilder.Append('(').Append(type.Type.Precision).Append(',').Append(type.Type.Scale).Append(')');
+			}
 
-			if (database != null)
-				sb.Append(database).Append(".");
-
-			return sb.Append(table);
-		}
-
-		static bool IsDateTime(Type type)
-		{
-			return    type == typeof(DateTime)
-				   || type == typeof(DateTimeOffset)
-				   || type == typeof(DateTime?)
-				   || type == typeof(DateTimeOffset?);
+			if (type.CanBeNull)
+				StringBuilder.Append(")");
 		}
 
 		protected override void BuildDropTableStatement(SqlDropTableStatement dropTable)
@@ -108,6 +184,40 @@ namespace LinqToDB.DataProvider.ClickHouse
 		protected override void BuildMergeStatement(SqlMergeStatement merge)
 		{
 			throw new LinqToDBException($"{Name} provider doesn't support SQL MERGE statement");
+		}
+
+		protected override void BuildInsertQuery(SqlStatement statement, SqlInsertClause insertClause, bool addAlias)
+		{
+			base.BuildInsertQuery(statement, insertClause, addAlias);
+		}
+
+		protected override void BuildLikePredicate(SqlPredicate.Like predicate)
+		{
+			var precedence = GetPrecedence(predicate);
+			StringBuilder.Append(predicate.IsNot ? " notLike(" : " like(");
+
+			BuildExpression(precedence, predicate.Expr1);
+
+			StringBuilder.Append(" , ");
+
+			BuildExpression(precedence, predicate.Expr2);
+
+			StringBuilder.Append(")");
+		}
+
+		protected override void BuildFunction(SqlFunction func)
+		{
+			if (func.Name.Equals("CAST", StringComparison.OrdinalIgnoreCase))
+			{
+				StringBuilder.Append("CAST(");
+				BuildExpression(func.Parameters[0]);
+				StringBuilder.Append(" AS ");
+				BuildExpression(func.Parameters[1]);
+				StringBuilder.Append(")");
+
+				return;
+			}
+			base.BuildFunction(func);
 		}
 	}
 }
