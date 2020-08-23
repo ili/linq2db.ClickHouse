@@ -8,6 +8,7 @@ namespace LinqToDB.DataProvider.ClickHouse
 	using SqlQuery;
 	using SqlProvider;
 	using LinqToDB.Mapping;
+	using System.Data;
 
 	public class ClickHouseSqlBuilder : BasicSqlBuilder
 	{
@@ -42,7 +43,7 @@ namespace LinqToDB.DataProvider.ClickHouse
 				case ConvertType.NameToQueryParameter:
 				case ConvertType.NameToCommandParameter:
 				case ConvertType.NameToSprocParameter:
-					return sb.Append('{').Append(value);
+					return sb/*.Append('_')*/.Append(value);
 
 				case ConvertType.NameToQueryField:
 				case ConvertType.NameToQueryFieldAlias:
@@ -82,8 +83,6 @@ namespace LinqToDB.DataProvider.ClickHouse
 
 			switch (type.Type.DataType)
 			{
-
-				case DataType.Int32: StringBuilder.Append("INTEGER"); break;
 				case DataType.Undefined:
 				case DataType.Char:
 				case DataType.VarChar:
@@ -97,7 +96,7 @@ namespace LinqToDB.DataProvider.ClickHouse
 				case DataType.VarBinary:
 				case DataType.Blob:
 				case DataType.Image:
-					StringBuilder.Append("binary");
+					StringBuilder.Append("String");
 					break;
 				case DataType.Guid:
 					StringBuilder.Append("UUID");
@@ -126,7 +125,9 @@ namespace LinqToDB.DataProvider.ClickHouse
 				case DataType.Money:
 				case DataType.SmallMoney:
 				case DataType.VarNumeric:
-					StringBuilder.Append("decimal");
+					StringBuilder.Append("Decimal");
+					if (type.Type.Precision == null)
+						StringBuilder.Append("64(8)");
 					break;
 				case DataType.Date:
 				case DataType.SmallDateTime:
@@ -218,6 +219,28 @@ namespace LinqToDB.DataProvider.ClickHouse
 				return;
 			}
 			base.BuildFunction(func);
+		}
+
+		protected override void BuildSetOperation(SetOperation operation, StringBuilder sb)
+		{
+			switch (operation)
+			{
+				case SetOperation.Union:
+					sb.Append("UNION ALL");
+					break;
+				default:
+					base.BuildSetOperation(operation, sb);
+					break;
+			}
+		}
+
+		protected override void BuildParameter(SqlParameter parameter)
+		{
+			StringBuilder.Append("{");
+			base.BuildParameter(parameter);
+			StringBuilder.Append(":");
+			BuildDataType(new SqlDataType(parameter.Type), false);
+			StringBuilder.Append("}");
 		}
 	}
 }

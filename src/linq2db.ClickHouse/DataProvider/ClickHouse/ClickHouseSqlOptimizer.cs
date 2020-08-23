@@ -13,9 +13,9 @@ namespace LinqToDB.DataProvider.ClickHouse
 		public ClickHouseSqlOptimizer(SqlProviderFlags sqlProviderFlags)
 			: base(sqlProviderFlags) { }
 
-		public override ISqlExpression ConvertExpression(ISqlExpression expression)
+		public override ISqlExpression ConvertExpression(ISqlExpression expression, bool withParameters)
 		{
-			if (expression is SqlParameter par)
+			if (expression is SqlParameter par && (par.Value == null || par.Type.DataType == DataType.Guid))
 				expression = new SqlValue(par.Type, par.Value);
 
 			if (expression is SqlBinaryExpression bex && bex.Operation[0] == '+' && bex.SystemType == typeof(string))
@@ -24,7 +24,7 @@ namespace LinqToDB.DataProvider.ClickHouse
 			if (expression is SqlFunction fex && fex.Name.Equals("convert", StringComparison.OrdinalIgnoreCase))
 				expression = new SqlFunction(fex.SystemType, "CAST", fex.IsAggregate, fex.IsPure, fex.Precedence, fex.Parameters[1], fex.Parameters[0]);
 
-			return base.ConvertExpression(expression);
+			return base.ConvertExpression(expression, withParameters);
 		}
 
 		public override SqlStatement Finalize(SqlStatement statement, bool inlineParameters)

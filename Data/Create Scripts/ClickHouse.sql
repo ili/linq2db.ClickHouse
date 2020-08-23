@@ -104,7 +104,7 @@ CREATE TABLE LinqDataTypes
 	DateTimeValue2 Nullable(DateTime64(5)),
 	BoolValue      Nullable(UInt8),
 	GuidValue      Nullable(UUID),
-	BinaryValue    Nullable(binary(5000)),
+	BinaryValue    Nullable(String),
 	SmallIntValue  Nullable(Int16),
 	IntValue       Nullable(Int32),
 	BigIntValue    Nullable(Int64),
@@ -154,12 +154,12 @@ CREATE TABLE AllTypes
 	nvarcharDataType         Nullable(String),
 	ntextDataType            Nullable(String),
 
-	binaryDataType           Nullable(binary(5000)),
-	varbinaryDataType        Nullable(binary(5000)),
-	imageDataType            Nullable(binary(5000)),
+	binaryDataType           Nullable(String),
+	varbinaryDataType        Nullable(String),
+	imageDataType            Nullable(String),
 
 	uniqueidentifierDataType Nullable(UUID),
-	objectDataType           Nullable(binary(5000))
+	objectDataType           Nullable(String)
 )
 ENGINE = MergeTree()
 ORDER BY ID
@@ -257,7 +257,7 @@ CREATE TABLE TestMerge1
 	FieldFloat      Nullable(Float32),
 	FieldDouble     Nullable(Float64),
 	FieldDateTime   Nullable(DateTime),
-	FieldBinary     Nullable(binary(20)),
+	FieldBinary     Nullable(String),
 	FieldGuid       Nullable(UUID),
 	FieldDate       Nullable(Date),
 	FieldEnumString Nullable(String),
@@ -285,7 +285,7 @@ CREATE TABLE TestMerge2
 	FieldFloat      Nullable(Float32),
 	FieldDouble     Nullable(Float64),
 	FieldDateTime   Nullable(DateTime),
-	FieldBinary     Nullable(binary(20)),
+	FieldBinary     Nullable(String),
 	FieldGuid       Nullable(UUID),
 	FieldDate       Nullable(Date),
 	FieldEnumString Nullable(String),

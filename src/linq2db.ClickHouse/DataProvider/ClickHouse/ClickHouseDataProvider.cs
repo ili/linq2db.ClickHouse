@@ -47,6 +47,8 @@ namespace LinqToDB.DataProvider.ClickHouse
 			SqlProviderFlags.IsAffectedRowsSupported           = false;
 
 			_sqlOptimizer = new ClickHouseSqlOptimizer(SqlProviderFlags);
+
+			SetProviderField<IDataReader, byte[], string>((r, i) => (byte[])r.GetValue(i));
 		}
 
 		protected override string? NormalizeTypeName(string? typeName)
@@ -80,21 +82,50 @@ namespace LinqToDB.DataProvider.ClickHouse
 
 		public override void SetParameter(DataConnection dataConnection, IDbDataParameter parameter, string name, DbDataType dataType, object? value)
 		{
-			base.SetParameter(dataConnection, parameter, "@" + name, dataType, value);
-		}
+			var convertToString = false;
+			var encoding = null as System.Text.Encoding;
 
-		protected override void SetParameterType(DataConnection dataConnection, IDbDataParameter parameter, DbDataType dataType)
-		{
 			switch (dataType.DataType)
 			{
-				case DataType.UInt32    : dataType = dataType.WithDataType(DataType.Int64);    break;
-				case DataType.UInt64    : dataType = dataType.WithDataType(DataType.Decimal);  break;
-				case DataType.DateTime2 : dataType = dataType.WithDataType(DataType.DateTime); break;
+				case DataType.Undefined:
+				case DataType.Char:
+				case DataType.VarChar:
+				case DataType.Text:
+				case DataType.NChar:
+				case DataType.NVarChar:
+				case DataType.NText:
+				case DataType.Xml:
+				case DataType.Variant:
+				case DataType.Json:
+					convertToString = true;
+					encoding = System.Text.Encoding.UTF8;
+					break;
+				case DataType.Binary:
+				case DataType.VarBinary:
+				case DataType.Blob:
+				case DataType.Image:
+				case DataType.BinaryJson:
+					convertToString = true;
+					break;
 			}
 
-			base.SetParameterType(dataConnection, parameter, dataType);
-		}
+			if (value is bool boolValue)
+			{
+				value = boolValue ? 1 : 0;
+				dataType = dataType.WithDataType(DataType.Byte);
+			}
 
+			var arr = (value as byte[]) ?? (value as System.Data.Linq.Binary)?.ToArray();
+
+			if (convertToString && arr != null)
+			{
+				value = encoding != null
+					? encoding.GetString(arr)
+					: ClickHouseMappingSchema.ToHexString(new System.Text.StringBuilder(), arr).ToString();
+			}
+
+			base.SetParameter(dataConnection, parameter, name, dataType, value);
+		}
 
 		private static readonly HttpClient _httpClient = new HttpClient(
 			new HttpClientHandler()
