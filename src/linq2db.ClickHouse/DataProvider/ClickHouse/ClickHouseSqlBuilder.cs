@@ -73,6 +73,84 @@ namespace LinqToDB.DataProvider.ClickHouse
 			return sb.Append(value);
 		}
 
+		protected override void BuildCreateTableFieldType(SqlField field)
+		{
+			if (field.CanBeNull)
+				StringBuilder.Append("Nullable(");
+
+			BuildDataType(new SqlDataType(field.Type!.Value), true);
+
+			if (field.CanBeNull)
+				StringBuilder.Append(")");
+		}
+
+		protected override void BuildEndCreateTableStatement(SqlCreateTableStatement createTable)
+		{
+			base.BuildEndCreateTableStatement(createTable);
+			var objectType = createTable.Table!.ObjectType!;
+			var primaryKeys = createTable.Table!.Fields
+				.Where(_ => _.Value.IsPrimaryKey)
+				.OrderBy(_ => _.Value.PrimaryKeyOrder)
+				.ToList()
+				;
+			
+			var enginaAttribute = MappingSchema.GetAttribute<TableEngineAttribute>(objectType)
+				?? ((primaryKeys.Count > 0) 
+					? TableEngineAttribute.MergeTree 
+					: TableEngineAttribute.StripeLog);
+
+			StringBuilder
+				.Append("ENGINE = ")
+				.Append(enginaAttribute.Engine)
+				.AppendLine();
+
+
+
+			var keys = new StringBuilder();
+			foreach (var pk in primaryKeys)
+			{
+				Convert(keys, pk.Value.PhysicalName, ConvertType.NameToQueryField);
+				keys.Append(", ");
+			}
+			if (keys.Length > 2)
+				keys.Length -= 2;
+
+			var tablePrimaryKeys = keys.ToString();
+			
+			var pimaryKeyStatement = enginaAttribute.PrimaryKeys ?? tablePrimaryKeys;
+			var orderByStatement = enginaAttribute.OrderBy ?? tablePrimaryKeys;
+
+			if (!string.IsNullOrEmpty(pimaryKeyStatement))
+				StringBuilder.Append("PRIMARY KEY (").Append(pimaryKeyStatement).Append(")").AppendLine();
+			
+			if (!string.IsNullOrEmpty(orderByStatement))
+				StringBuilder.Append("ORDER BY (").Append(orderByStatement).Append(")").AppendLine();
+
+			if (!string.IsNullOrEmpty(enginaAttribute.PartitionBy))
+				StringBuilder.Append("PARTITION BY (").Append(enginaAttribute.PartitionBy).Append(")").AppendLine();
+
+			if (!string.IsNullOrEmpty(enginaAttribute.SampleBy))
+				StringBuilder.Append("SAMPLE BY (").Append(enginaAttribute.SampleBy).Append(")").AppendLine();
+
+			if (!string.IsNullOrEmpty(enginaAttribute.Ttl))
+				StringBuilder.Append("TTL ").Append(enginaAttribute.Ttl).AppendLine();
+
+			if (!string.IsNullOrEmpty(enginaAttribute.Settings))
+				StringBuilder.Append("SETTINGS ").Append(enginaAttribute.Settings).AppendLine();
+		}
+
+		protected override void BuildCreateTablePrimaryKey(SqlCreateTableStatement createTable, string pkName, IEnumerable<string> fieldNames)
+		{
+			while (StringBuilder[StringBuilder.Length - 1] != ',')
+				StringBuilder.Length--;
+			StringBuilder.Length--;
+		}
+
+		protected override void BuildCreateTableNullAttribute(SqlField field, DefaultNullable defaultNullable)
+		{
+			return;
+		}
+
 		protected override void BuildDataTypeFromDataType(SqlDataType type, bool forCreateTable)
 		{
 			if (type.CanBeNull)
@@ -241,6 +319,17 @@ namespace LinqToDB.DataProvider.ClickHouse
 			StringBuilder.Append(":");
 			BuildDataType(new SqlDataType(parameter.Type), false);
 			StringBuilder.Append("}");
+		}
+
+		protected override void BuildSql(int commandNumber, SqlStatement statement, StringBuilder sb, int indent, bool skipAlias)
+		{
+			base.BuildSql(commandNumber, statement, sb, indent, false);
+		}
+
+		protected override void BuildColumnExpression(SelectQuery? selectQuery, ISqlExpression expr, string? alias, ref bool addAlias)
+		{
+			base.BuildColumnExpression(selectQuery, expr, alias, ref addAlias);
+			addAlias = true;
 		}
 	}
 }
