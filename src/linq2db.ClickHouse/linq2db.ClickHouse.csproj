@@ -14,10 +14,6 @@
 		<ProjectReference Include="..\..\submodules\ClickHouse.Client\ClickHouse.Client\ClickHouse.Client.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<!--<PackageReference Include="ClickHouse.Client" Version="2.0.0.262"/>-->
-	</ItemGroup>
-
 	<ItemGroup Condition=" '$(TargetFramework)' == 'net45' OR '$(TargetFramework)' == 'net46' ">
 		<Reference Include="System.Data.Linq" />
 	</ItemGroup>

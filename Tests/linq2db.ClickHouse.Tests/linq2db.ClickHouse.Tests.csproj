@@ -51,6 +51,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	
+		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\ArrayTableTests.cs"/>
+		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\AssociationTests.cs"/>
+		<Compile Include="..\..\submodules\linq2db\Source\LinqToDb\Properties\JetBrains.Annotations.cs"/>
 	</ItemGroup>
 </Project>

@@ -37,6 +37,11 @@ Project("{778DAE3C-4631-46EA-AA77-85C1314464D9}") = "Tests.VisualBasic", "submod
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClickHouse.Client", "submodules\ClickHouse.Client\ClickHouse.Client\ClickHouse.Client.csproj", "{654AD098-3714-4A44-83A8-14924746FC0C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{83EBE157-30C3-4C61-9672-D0AE69F75E87}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Azure|Any CPU = Azure|Any CPU

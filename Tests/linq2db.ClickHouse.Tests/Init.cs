@@ -6,6 +6,7 @@ using LinqToDB.Data;
 using LinqToDB.DataProvider.ClickHouse;
 using LinqToDB.Mapping;
 using NUnit.Framework;
+using Tests.Linq;
 using Tests.Model;
 
 [SetUpFixture]
@@ -32,5 +33,7 @@ public class Init
 			.Property(_ => _.ID)
 			.HasIdentity(false);
 
+		builder.Entity<AssociationTests.Issue1096Task>()
+			.HasAttribute(new TableEngineAttribute("StripeLog"));
 	}
 }
