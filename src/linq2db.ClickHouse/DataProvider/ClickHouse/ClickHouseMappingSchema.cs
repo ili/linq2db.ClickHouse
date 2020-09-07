@@ -5,10 +5,14 @@ using System.Linq;
 
 namespace LinqToDB.DataProvider.ClickHouse
 {
+	using LinqToDB.Expressions;
 	using LinqToDB.Metadata;
+	using LinqToDB.SqlQuery;
 	using Mapping;
 	using SqlQuery;
 	using System.Data.Linq;
+	using System.Data.SqlTypes;
+	using System.Linq.Expressions;
 	using System.Reflection;
 
 	using static LinqToDB.Linq.Expressions;
@@ -19,11 +23,16 @@ namespace LinqToDB.DataProvider.ClickHouse
 		{
 			MapMembers(configuration);
 
-			SetValueToSqlConverter(typeof(byte[]), (sb, dt, v) => ConvertBinaryToSql(sb, (byte[])v));
-			SetValueToSqlConverter(typeof(Binary), (sb, dt, v) => ConvertBinaryToSql(sb, ((Binary)v).ToArray()));
+			SetValueToSqlConverter(typeof(byte[]),      (sb, dt, v) => ConvertBinaryToSql(sb, (byte[])v));
+			SetValueToSqlConverter(typeof(Binary),      (sb, dt, v) => ConvertBinaryToSql(sb, ((Binary)v).ToArray()));
+			SetValueToSqlConverter(typeof(DateTime),    (sb, bt, v) => BuildDateTime(sb, (DateTime)v));
+			SetValueToSqlConverter(typeof(SqlDateTime), (sb, dt, v) => BuildDateTime(sb, (DateTime)(SqlDateTime)v));
 
 			SetConverter<string, byte[]>(ToRawByteArray);
 		}
+
+		private static void BuildDateTime(StringBuilder sb, DateTime dateTime)
+			=> sb.AppendFormat("'{0:yyyy-MM-dd HH:mm:ss.fff}'", dateTime);
 
 		private static byte[] ToRawByteArray(string input)
 		{
@@ -44,10 +53,13 @@ namespace LinqToDB.DataProvider.ClickHouse
 			var builder = GetFluentMappingBuilder();
 
 			builder
-				.HasAttribute(M(() => Sql.NewGuid()),      new Sql.FunctionAttribute(configuration, "generateUUIDv4") { ServerSideOnly = true, CanBeNull = false })
-				.HasAttribute((string p) => Sql.Length(p), new Sql.FunctionAttribute(configuration, "lengthUTF8"))
-				.HasAttribute((string p) => Sql.Lower(p),  new Sql.FunctionAttribute(configuration, "lowerUTF8"))
-				.HasAttribute((string p) => Sql.Upper(p),  new Sql.FunctionAttribute(configuration, "upperUTF8"))
+				.HasAttribute(M(() => Sql.NewGuid()),      new Sql.FunctionAttribute (configuration, "generateUUIDv4") { ServerSideOnly = true, CanBeNull = false })
+				.HasAttribute((string p) => Sql.Length(p), new Sql.FunctionAttribute (configuration, "lengthUTF8"))
+				.HasAttribute((string p) => Sql.Lower(p),  new Sql.FunctionAttribute (configuration, "lowerUTF8"))
+				.HasAttribute((string p) => Sql.Upper(p),  new Sql.FunctionAttribute (configuration, "upperUTF8"))
+				.HasAttribute((Sql.DateParts p) => Sql.DatePart(p, null as DateTime?), 
+					new Sql.ExtensionAttribute(configuration, "") { ServerSideOnly = false, PreferServerSide = false, BuilderType = typeof(DatePartBuilderClickHouse) })
+
 			//.HasAttribute((double? p) => Sql.Floor(p), new Sql.FunctionAttribute(configuration, "floor"))
 			;
 		}
@@ -117,9 +129,32 @@ namespace LinqToDB.DataProvider.ClickHouse
 			
 		}
 
-		private class ClickHouseMetadataReader : MetadataReader
+		class DatePartBuilderClickHouse : Sql.IExtensionCallBuilder
 		{
-			 
+			public void Build(Sql.ISqExtensionBuilder builder)
+			{
+				string partStr;
+				var part = builder.GetValue<Sql.DateParts>("part");
+				switch (part)
+				{
+					case Sql.DateParts.Year        : partStr = "toYear({date})";                                                     break;
+					case Sql.DateParts.Quarter     : partStr = "(toMonth({date}) % 3)";                                              break;
+					case Sql.DateParts.Month       : partStr = "toMonth({date})";                                                    break;
+					case Sql.DateParts.DayOfYear   : partStr = "dateDiff('day', toStartOfYear({date}), {date})";                     break;
+					case Sql.DateParts.Day         : partStr = "toDayOfMonth({date})";                                               break;
+					case Sql.DateParts.Week        : partStr = "dateDiff('week', toStartOfYear({date}), {date})";                    break;
+					case Sql.DateParts.WeekDay     : partStr = "toDayOfWeek({date})";                                                break;
+					case Sql.DateParts.Hour        : partStr = "toHour({date})";                                                     break;
+					case Sql.DateParts.Minute      : partStr = "toMinute({date})";                                                   break;
+					case Sql.DateParts.Second      : partStr = "toSecond({date})";                                                   break;
+					case Sql.DateParts.Millisecond : partStr = "(toUnixTimestamp({date}) - toUnixTimestamp(toStartOfSecond({date})"; break;
+					default:
+						throw new ArgumentOutOfRangeException(part.ToString());
+				}
+
+				builder.Expression = partStr;
+			}
 		}
+
 	}
 }
