@@ -134,12 +134,21 @@ namespace LinqToDB.DataProvider.ClickHouse
 				AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
 			});
 
+		public static IDictionary<string, string> QuerySettings { get; set; } =
+		new Dictionary<string, string>
+		{
+			{ "join_use_nulls", "1" },
+		};
+
 		protected override IDbConnection CreateConnectionInternal(string connectionString)
 		{
 			//return base.CreateConnectionInternal(connectionString);
 			return new global::ClickHouse.Client.ADO.ClickHouseConnection(
 				connectionString,
-				_httpClient);
+				_httpClient)
+			{
+				QuerySettings = QuerySettings
+			};
 		}
 
 		#region BulkCopy
