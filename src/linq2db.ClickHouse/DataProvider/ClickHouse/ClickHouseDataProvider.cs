@@ -143,12 +143,14 @@ namespace LinqToDB.DataProvider.ClickHouse
 		protected override IDbConnection CreateConnectionInternal(string connectionString)
 		{
 			//return base.CreateConnectionInternal(connectionString);
-			return new global::ClickHouse.Client.ADO.ClickHouseConnection(
+			var connection = new global::ClickHouse.Client.ADO.ClickHouseConnection(
 				connectionString,
-				_httpClient)
-			{
-				QuerySettings = QuerySettings
-			};
+				_httpClient);
+
+			foreach (var s in QuerySettings)
+				connection.CustomSettings[s.Key] = s.Value;
+
+			return connection;
 		}
 
 		#region BulkCopy

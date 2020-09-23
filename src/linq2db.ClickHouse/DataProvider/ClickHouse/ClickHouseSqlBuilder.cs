@@ -168,7 +168,8 @@ namespace LinqToDB.DataProvider.ClickHouse
 				case DataType.NChar:
 				case DataType.NVarChar:
 				case DataType.NText:
-					StringBuilder.Append(!ignoreLength && type.Type.Length > 0 ? "FixedString" : "String");
+					ignoreLength = true;
+					StringBuilder.Append("String");
 					break;
 				case DataType.Binary:
 				case DataType.VarBinary:
@@ -312,8 +313,21 @@ namespace LinqToDB.DataProvider.ClickHouse
 			}
 		}
 
+		internal static bool InlineParameter(SqlParameter parameter)
+		{
+			return parameter.Value == null ||
+				   parameter.Type.DataType == DataType.Guid ||
+				   parameter.Type.SystemType == typeof(string);
+		}
+
 		protected override void BuildParameter(SqlParameter parameter)
 		{
+			if (InlineParameter(parameter))
+			{
+				BuildValue(new SqlDataType(parameter.Type), parameter.Value);
+				return;
+			}
+
 			StringBuilder.Append("{");
 			base.BuildParameter(parameter);
 			StringBuilder.Append(":");

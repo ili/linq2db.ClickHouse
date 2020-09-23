@@ -36,7 +36,8 @@
 			},
 			"ClickHouse.Client": {
 				"Provider": "ClickHouse.Client",
-				"ConnectionString": "Host=rc1c-pk6w0hv8kpqqrn89.mdb.yandexcloud.net;Database=TestDatabase;Password=TestPassword;Username=TestUser;Protocol=https;Port=8443"
+				"ConnectionString": "Host=rc1c-pk6w0hv8kpqqrn89.mdb.yandexcloud.net;Database=TestDatabase;Password=TestPassword;Username=TestUser;Protocol=https;Port=8443",
+				"SkipTests": "ClickHouse"
 			},
 			"SQLite.MS": {
 				"Provider": "SQLite.MS",
@@ -50,6 +51,49 @@
 		"AddProviders": [
 			"ClickHouse.Ado",
 			"ClickHouse.Client"
-		]
+		],
+		"SkipTests": {
+			"ClickHouse": [
+				// Complex join predicates not supported
+				// Subquery as field is nor supported
+				"AssociationTests.TestGenericAssociation1",
+				"AssociationTests.TestGenericAssociation2",
+				"AssociationTests.TestGenericAssociation3",
+				"AssociationTests.TestGenericAssociation4",
+				"AssociationTests.TestGenericAssociationRuntime",
+				"AssociationTests.TestGenericAssociationRuntimeMany",
+				"AssociationTests.SelectMany3",
+				"AssociationTests.SelectMany4",
+				"AssociationTests.StackOverflow2",
+				"AssociationTests.StackOverflow3",
+				"AssociationTests.StackOverflow4",
+				"AssociationTests.LetTest1",
+				"AssociationTests.LetTest2",
+				"AssociationTests.NullAssociation",
+				"AssociationTests.Issue1711Test1",
+				"AssociationTests.Issue1711Test2",
+				"AssociationTests.Issue148Test",
+				"AssociationTests.ComplexQueryWithManyToMany",
+				"AssociationTests.AssociationInHierarchy",
+				"AssociationTests.AssociationExpressionMethod",
+
+				// WHERE Exists not supported
+				"CommonTests.ParameterTest1",
+
+				// Complex join predicates not supported
+				"ComplexTests.Contains1",
+				"ComplexTests.Contains2",
+				"ComplexTests.Contains3",
+				"ComplexTests.Contains4",
+				"ComplexTests.Contains6",
+
+				"ComplexTests2.TestUpdateWithTypeAndBaseType",
+
+				"TestInheritanceByBaseType",
+				"TestInsertUsingDerivedObjectUsingAttributes",
+				"TestInsertUsingDerivedObjectUsingFluentMapping"
+
+			]
+		}
 	}
 }

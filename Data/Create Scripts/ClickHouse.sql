@@ -146,11 +146,11 @@ CREATE TABLE AllTypes
 
 	datetimeDataType         Nullable(datetime),
 
-	charDataType             Nullable(FixedString(1)),
-	char20DataType           Nullable(FixedString(20)),
+	charDataType             Nullable(String),
+	char20DataType           Nullable(String),
 	varcharDataType          Nullable(String),
 	textDataType             Nullable(String),
-	ncharDataType            Nullable(FixedString(20)),
+	ncharDataType            Nullable(String),
 	nvarcharDataType         Nullable(String),
 	ntextDataType            Nullable(String),
 
