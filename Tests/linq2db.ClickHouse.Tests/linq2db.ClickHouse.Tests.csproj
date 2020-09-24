@@ -51,14 +51,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Compile Include="..\..\submodules\linq2db\Source\LinqToDb\Properties\JetBrains.Annotations.cs"/>
+		<Compile Include="..\..\submodules\linq2db\Source\LinqToDb\Properties\JetBrains.Annotations.cs" />
 
-		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\ArrayTableTests.cs"/>
-		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\AssociationTests.cs"/>
+		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\ArrayTableTests.cs" />
+		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\AssociationTests.cs" />
 		<!--<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\CharTypesTests.cs"/>-->
-		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\ColumnAliasTests.cs"/>
-		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\CommonTests.cs"/>
-		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\ComplexTests.cs"/>
-		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\ComplexTests2.cs"/>
+		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\ColumnAliasTests.cs" />
+		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\CommonTests.cs" />
+		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\ComplexTests.cs" />
+		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\ComplexTests2.cs" />
+		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\ConcatUnionTests.cs" />
 	</ItemGroup>
 </Project>

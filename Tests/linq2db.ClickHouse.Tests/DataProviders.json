@@ -87,12 +87,14 @@
 				"ComplexTests.Contains4",
 				"ComplexTests.Contains6",
 
-				"ComplexTests2.TestUpdateWithTypeAndBaseType",
-
 				"TestInheritanceByBaseType",
 				"TestInsertUsingDerivedObjectUsingAttributes",
-				"TestInsertUsingDerivedObjectUsingFluentMapping"
+				"TestInsertUsingDerivedObjectUsingFluentMapping",
 
+				"ConcatUnionTests.Concat6",
+
+				// UPDATE\DELETE
+				"ComplexTests2.TestUpdateWithTypeAndBaseType"
 			]
 		}
 	}

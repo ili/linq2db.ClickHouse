@@ -23,7 +23,19 @@ namespace LinqToDB.DataProvider.ClickHouse
 					statement.IsParameterDependent = statement.IsParameterDependent ||
 					                                 parameter.CanBeNull ||
 					                                 ClickHouseSqlBuilder.InlineParameter(parameter);
+				// FIX ClickHouse SQL issue
+				// https://github.com/ClickHouse/ClickHouse/issues/14978
+				if (x is SqlColumn cex)
+					cex.Alias = (cex.Alias ?? "") + "_";
 			});
+
+			statement = QueryHelper.WrapQuery(statement,
+				select => select.SetOperators.Any(_ => _.Operation == SetOperation.Union) == true,
+				(a, b) => 
+				{
+					a.Select.IsDistinct = true;
+				}
+				);
 
 			return base.OptimizeStatement(statement, inlineParameters, withParameters, remoteContext);
 		}
