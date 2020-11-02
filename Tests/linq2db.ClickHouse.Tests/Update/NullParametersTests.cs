@@ -13,8 +13,8 @@ namespace LinqToDB.ClickHouse.Tests.Update
 	{
 		public class NullParametersTest
 		{
-			public int?   IntValue;
-			public string StringValue;
+			public int?    IntValue;
+			public string? StringValue;
 
 			public static readonly IEqualityComparer<NullParametersTest> Comparer = new ComparerImpl();
 			class ComparerImpl : IEqualityComparer<NullParametersTest>

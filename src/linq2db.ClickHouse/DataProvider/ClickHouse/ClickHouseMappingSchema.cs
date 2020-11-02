@@ -60,8 +60,28 @@ namespace LinqToDB.DataProvider.ClickHouse
 				.HasAttribute((Sql.DateParts p) => Sql.DatePart(p, null as DateTime?), 
 					new Sql.ExtensionAttribute(configuration, "") { ServerSideOnly = false, PreferServerSide = false, BuilderType = typeof(DatePartBuilderClickHouse) })
 
-			//.HasAttribute((double? p) => Sql.Floor(p), new Sql.FunctionAttribute(configuration, "floor"))
+				.HasAttribute((double?  p) => Sql.RoundToEven(p),            new Sql.FunctionAttribute(configuration, "roundBankers"))
+				.HasAttribute((decimal? p) => Sql.RoundToEven(p),            new Sql.FunctionAttribute(configuration, "roundBankers"))
+				.HasAttribute((double?  p) => Sql.RoundToEven(p, 0 as int?), new Sql.FunctionAttribute(configuration, "roundBankers"))
+				.HasAttribute((decimal? p) => Sql.RoundToEven(p, 0 as int?), new Sql.FunctionAttribute(configuration, "roundBankers"))
+
+				.HasAttribute((int      p) => Sql.Decimal(p),                new Sql.ExpressionAttribute(configuration, "Decimal({0}, 4)") { ServerSideOnly = true })
+				.HasAttribute(M(()         => Sql.DefaultDecimal),           new Sql.PropertyAttribute  (configuration, "Decimal(32,  10)") { ServerSideOnly = true })
+				.HasAttribute(M(()         => Sql.Money),                    new Sql.PropertyAttribute  (configuration, "Decimal(32,  10)") { ServerSideOnly = true })
+				.HasAttribute(M(()         => Sql.SmallMoney),               new Sql.PropertyAttribute  (configuration, "Decimal(32,  10)") { ServerSideOnly = true })
+				
+				.HasAttribute(M(()         => Sql.DateTime2),                new Sql.PropertyAttribute  (configuration, "DateTime64") { ServerSideOnly = true })
+				.HasAttribute(M(()         => Sql.SmallDateTime),            new Sql.PropertyAttribute  (configuration, "DateTime")   { ServerSideOnly = true })
 			;
+
+			MapMember(configuration, (double?  p)         => Sql.RoundToEven(p),    (double?  p)         => SqlCh.RoundBankers(p));
+			MapMember(configuration, (decimal? p)         => Sql.RoundToEven(p),    (decimal? p)         => SqlCh.RoundBankers(p));
+			MapMember(configuration, (double?  p, int? i) => Sql.RoundToEven(p, i), (double?  p, int? i) => SqlCh.RoundBankers(p, i));
+			MapMember(configuration, (decimal? p, int? i) => Sql.RoundToEven(p, i), (decimal? p, int? i) => SqlCh.RoundBankers(p, i));
+
+			// https://github.com/ClickHouse/ClickHouse/issues/5690
+			ValueToSqlConverter.SetConverter(typeof(decimal),  (sb, dt, o) => sb.AppendFormat(CultureInfo.InvariantCulture, "CAST({0} as decimal(32, 10))", o));
+			ValueToSqlConverter.SetConverter(typeof(decimal?), (sb, dt, o) => sb.AppendFormat(CultureInfo.InvariantCulture, "CAST({0} as decimal(32, 10))", o));
 		}
 
 		static void ConvertBinaryToSql(StringBuilder stringBuilder, byte[] value)

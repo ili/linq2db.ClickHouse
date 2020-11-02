@@ -205,8 +205,8 @@ namespace LinqToDB.DataProvider.ClickHouse
 				case DataType.SmallMoney:
 				case DataType.VarNumeric:
 					StringBuilder.Append("Decimal");
-					if (type.Type.Precision == null)
-						StringBuilder.Append("64(8)");
+					if (type.Type.Precision == null || type.Type.Scale == null)
+						StringBuilder.Append("(32, 10)");
 					break;
 				case DataType.Date:
 				case DataType.SmallDateTime:
@@ -248,7 +248,7 @@ namespace LinqToDB.DataProvider.ClickHouse
 				if (!ignoreLength && type.Type.Length > 0)
 					StringBuilder.Append('(').Append(type.Type.Length).Append(')');
 
-				if (type.Type.Precision > 0)
+				if (type.Type.Precision > 0 && type.Type.Scale > 0)
 					StringBuilder.Append('(').Append(type.Type.Precision).Append(',').Append(type.Type.Scale).Append(')');
 			}
 
@@ -317,7 +317,9 @@ namespace LinqToDB.DataProvider.ClickHouse
 		{
 			return parameter.Value == null ||
 				   parameter.Type.DataType == DataType.Guid ||
-				   parameter.Type.SystemType == typeof(string);
+				   parameter.Type.SystemType == typeof(string) /*||
+				   parameter.Type.SystemType == typeof(object)*/
+				   ;
 		}
 
 		protected override void BuildParameter(SqlParameter parameter)
@@ -331,7 +333,9 @@ namespace LinqToDB.DataProvider.ClickHouse
 			StringBuilder.Append("{");
 			base.BuildParameter(parameter);
 			StringBuilder.Append(":");
-			BuildDataType(new SqlDataType(parameter.Type), false);
+			BuildDataType(parameter.Type.SystemType != typeof(object)
+				? new SqlDataType(parameter.Type)
+				: new SqlDataType(parameter.Value!.GetType()), false);
 			StringBuilder.Append("}");
 		}
 

@@ -1,4 +1,5 @@
-﻿using LinqToDB.SqlProvider;
+﻿using LinqToDB.Extensions;
+using LinqToDB.SqlProvider;
 using LinqToDB.SqlQuery;
 using System;
 using System.Collections.Generic;
@@ -48,9 +49,39 @@ namespace LinqToDB.DataProvider.ClickHouse
 					Cast(bex.Expr2, typeof(string)));
 
 			if (expression is SqlFunction fex && fex.Name.Equals("convert", StringComparison.OrdinalIgnoreCase))
-				expression = new SqlFunction(fex.SystemType, "CAST", fex.IsAggregate, fex.IsPure, fex.Precedence, fex.Parameters[1], fex.Parameters[0]);
+			{
+				if (fex.Parameters[0].SystemType == typeof(bool) && 
+					(fex.Parameters[1].SystemType!.IsFloatType() || fex.Parameters[1].SystemType!.IsIntegerType()))
+				{
+					expression = new SqlBinaryExpression(typeof(bool), fex.Parameters[1], "!=", new SqlValue(0));
+				}
+				else
+					expression = new SqlFunction(fex.SystemType, "CAST", fex.IsAggregate, fex.IsPure, fex.Precedence, fex.Parameters[1], fex.Parameters[0]);
+			}
+
+			if (expression is SqlBinaryExpression dbex && dbex.Expr1.SystemType != dbex.Expr2.SystemType
+				&& (dbex.Expr1.SystemType == typeof(decimal) || dbex.Expr2.SystemType == typeof(decimal)))
+			{
+				expression = new SqlBinaryExpression(typeof(decimal),
+					Cast(dbex.Expr1, typeof(decimal)),
+					dbex.Operation,
+					Cast(dbex.Expr2, typeof(decimal)));
+			}
 
 			return base.ConvertExpression(expression, withParameters);
+		}
+
+		public override ISqlPredicate ConvertPredicate(SelectQuery selectQuery, ISqlPredicate predicate, bool withParameters)
+		{
+			if (predicate is SqlPredicate.ExprExpr ee && ee.Expr1.SystemType != ee.Expr2.SystemType
+				&& (ee.Expr1.SystemType == typeof(decimal) || ee.Expr2.SystemType == typeof(decimal)))
+			{
+				predicate = new SqlPredicate.ExprExpr(Cast(ee.Expr1, typeof(decimal)),
+					ee.Operator,
+					Cast(ee.Expr2, typeof(decimal)));
+			}
+
+			return base.ConvertPredicate(selectQuery, predicate, withParameters);
 		}
 
 		private ISqlExpression Cast(ISqlExpression expr, Type type)

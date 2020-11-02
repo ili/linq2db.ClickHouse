@@ -4,6 +4,7 @@
 		<TargetFramework>netcoreapp3.1</TargetFramework>
 
 		<IsPackable>false</IsPackable>
+		<Nullable>enable</Nullable>
 
 		<RootNamespace>LinqToDB.ClickHouse.Tests</RootNamespace>
 	</PropertyGroup>
@@ -52,14 +53,46 @@
 
 	<ItemGroup>
 		<Compile Include="..\..\submodules\linq2db\Source\LinqToDb\Properties\JetBrains.Annotations.cs" />
+		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\*.*" />
+		<Compile Include="..\..\submodules\linq2db\Tests\Linq\UserTests\*.*" />
 
-		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\ArrayTableTests.cs" />
+
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\Linq\AK107Tests.cs" />
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\Linq\AnalyticTests.cs" />
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\Linq\AllAnyTests.cs" />
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\Linq\ParserTests.cs" />
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\Linq\DataServiceTests.cs" />
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\Linq\QueryFilterTests.cs" />
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\Linq\VisualBasicTests.cs" />
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\Linq\QueryFilter.cs" />
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\Linq\DataContextTests.cs" />
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\Linq\TestQuetyCache.cs" />
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\Linq\TakeSkipTests.cs" />
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\Linq\FSharpTests.cs" />
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\Linq\FromSqlTests.cs" />
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\Linq\TestQueryCache.cs" />
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\Linq\CursorPagination.cs" />
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\Linq\CalculatedColumnTests.cs" />
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\Linq\CharTypesTests.cs" />
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\Linq\EnumMappingTests.cs" />
+		
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\UserTests\Issue1238Tests.cs" />
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\UserTests\Issue1398Tests.cs" />
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\UserTests\Issue1438Tests.cs" />
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\UserTests\Issue2470Tests.cs" />
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\UserTests\Issue927Tests.cs" />
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\UserTests\Issue1925Tests.cs" />
+		<Compile Remove="..\..\submodules\linq2db\Tests\Linq\UserTests\Issue278Tests.cs" />
+		
+		
+		<!--<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\ArrayTableTests.cs" />
 		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\AssociationTests.cs" />
-		<!--<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\CharTypesTests.cs"/>-->
+		-->
+		<!--<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\CharTypesTests.cs"/>--><!--
 		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\ColumnAliasTests.cs" />
 		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\CommonTests.cs" />
 		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\ComplexTests.cs" />
 		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\ComplexTests2.cs" />
-		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\ConcatUnionTests.cs" />
+		<Compile Include="..\..\submodules\linq2db\Tests\Linq\Linq\ConcatUnionTests.cs" />-->
 	</ItemGroup>
 </Project>
